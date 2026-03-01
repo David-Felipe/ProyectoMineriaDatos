@@ -1,0 +1,16 @@
+# Ignore all CSV files
+*.csv
+
+# Ignore standard LaTeX intermediate and log files
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
