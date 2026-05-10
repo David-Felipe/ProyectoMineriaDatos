@@ -160,6 +160,232 @@ Para analizar distintas tendencias se hizo una selección separada de ciertos ju
 \subsection{Uso de One-Hot Encoding}
 Se realizó el One-Hot Encoding en los atributos de "Genres" y "Tags" para facilitar el análisis. Sobre los géneros se realizó la codifiación sobre los 33 géneros únicos del dataset, mientras que para las etiquetas solo se usaron aquellas que tengan al menos 5000 apariciones para evitar tener columnas demasiado dispersas, conservando 59 de las 452 etiquetas presentes en el dataset.
 
+\section{Análisis de reglas de asociación}
+En esta sección se aplicaron los algoritmos Apriori y FP-Growth para generar reglas de asociación con base en los géneros y las etiquetas. Para empezar se realizó el análsis del dataset completo usando ciertas caracterísitcas de los juegos como antecedentes y métricas de éxito como consecuentes. Posteriormente se pasó al análisis de los juegos de interés, generando reglas de asociación entre géneros y etiquetas para obtener información específica a estos juegos. Por último se analizaron los juegos de interés para obtener las características que conducen a una calificación extremadamente positiva entre estos juegos.
+
+\subsection{Análisis del dataset completo}
+Para el análisis del dataset completo se usaron como antecedentes las columans que se consideraron útiles para predecir el éxito de un juego: \texttt{genre} y \texttt{tag} definen el contenido y estilo del juego, \texttt{Categories} da los modos de juego disponibles, \texttt{Price\_category} defiene el precio del juego, \texttt{Release\_season} y \texttt{Release\_year} hablan del contexto del mercado, \texttt{Windows}, \texttt{Mac}, \texttt{Linux} dan el alcance de la plataforma y, por último, \texttt{DLC\_count} y \texttt{Discount} se toman en bins y dan los contenidos descargables disponibles y los descuentos aplicados a los precios.
+
+Respecto a los consecuentes, se seleccionaron como medidas de éxito la calificación de los juegos (\texttt{review\_score\_cat}) con el objetivo de reseñas favorables, el volumen de reseñas (\texttt{total\_reviews}) con los objetivos de reseñas por encima del percentil 50, las ventas (\texttt{sales\_cat}) con el objetivo \texttt{sales\_good} y el pico de usuarios concurrentes (\texttt{ccu\_cat}) con el objetivo \texttt{ccu\_good}.
+
+Durante la aplicación de los algoritmos se pusieron restricciones a los soportes mínimo y máximo para descartar items raros y descartar tiems demasiado comunes (poco informativos).
+
+Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para cada consecuente, seguido de las 10 reglas globales más frecuentes. 
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rrrrrr}
+\textbf{} & \textbf{antecedents}                      & \textbf{consequents} & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & cat=Steam Trading Cards, tag=2D           & target=review\_good  & 0.023683         & 0.836116            & 2.361186      \\
+2         & DLC=1-2, tag=Story Rich                   & target=review\_good  & 0.022834         & 0.807371            & 2.280008      \\
+3         & cat=Steam Cloud, tag=Anime                & target=review\_good  & 0.024086         & 0.801749            & 2.264134      \\
+4         & cat=Steam Trading Cards, tag=Singleplayer & target=review\_good  & 0.043635         & 0.797248            & 2.251421      \\
+5         & cat=Steam Cloud, tag=Story Rich           & target=review\_good  & 0.034868         & 0.793186            & 2.239951      \\
+6         & DLC=1-2, tag=Atmospheric                  & target=review\_good  & 0.020880         & 0.791764            & 2.235934      \\
+7         & cat=Steam Cloud, tag=Female Protagonist   & target=review\_good  & 0.021240         & 0.785298            & 2.217675      \\
+8         & DLC=1-2, tag=2D                           & target=review\_good  & 0.030226         & 0.773247            & 2.183643      \\
+9         & cat=Steam Cloud, tag=Funny                & target=review\_good  & 0.023578         & 0.772675            & 2.182028      \\
+10        & cat=Steam Cloud, cat=Steam Trading Cards  & target=review\_good  & 0.043539         & 0.765476            & 2.161698     
+\end{tabular}%
+}
+\label{target review good fp growth 126 total rules}
+\end{table}
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rrrrrr}
+\textbf{} & \textbf{antecedents}    & \textbf{consequents} & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & tag=Visual Novel        & target=review\_good  & 0.034360         & 0.673708            & 1.902545      \\
+2         & cat=Steam Trading Cards & target=review\_good  & 0.066933         & 0.673245            & 1.901238      \\
+3         & tag=Anime               & target=review\_good  & 0.047331         & 0.662174            & 1.869973      \\
+4         & tag=Difficult           & target=review\_good  & 0.035814         & 0.644140            & 1.819046      \\
+5         & tag=Story Rich          & target=review\_good  & 0.074404         & 0.636616            & 1.797798      \\
+6         & tag=Female Protagonist  & target=review\_good  & 0.041945         & 0.631878            & 1.784417      \\
+7         & tag=Comedy              & target=review\_good  & 0.032932         & 0.629289            & 1.777106      \\
+8         & tag=Multiple Endings    & target=review\_good  & 0.028746         & 0.614032            & 1.734021      \\
+9         & tag=Funny               & target=review\_good  & 0.053007         & 0.613855            & 1.733523      \\
+10        & tag=Cute                & target=review\_good  & 0.066635         & 0.600047            & 1.694529     
+\end{tabular}%
+}
+\label{target review good apriori 37 total rules}
+\end{table}
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rrrrrr}
+\textbf{} & \textbf{antecedents}    & \textbf{consequents} & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & tag=Co-op               & target=sales\_good   & 0.007769         & 0.168695            & 7.679673      \\
+2         & tag=Multiplayer         & target=sales\_good   & 0.012297         & 0.138407            & 6.300827      \\
+3         & tag=Open World          & target=sales\_good   & 0.007191         & 0.137016            & 6.237507      \\
+4         & cat=Steam Trading Cards & target=sales\_good   & 0.011544         & 0.116113            & 5.285925     
+\end{tabular}%
+}
+\label{target sales good fp growth apriori 4 total rules}
+\end{table}
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rrrrrr}
+\textbf{} & \textbf{antecedents}    & \textbf{consequents} & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & tag=Multiplayer         & target=ccu\_good     & 0.017298         & 0.194696            & 4.605192      \\
+2         & cat=Steam Trading Cards & target=ccu\_good     & 0.016624         & 0.167210            & 3.955050      \\
+3         & cat=Co-op               & target=ccu\_good     & 0.011412         & 0.118401            & 2.800556      \\
+4         & cat=Multi-player        & target=ccu\_good     & 0.017902         & 0.100839            & 2.385157      \\
+5         & DLC=1-2                 & target=ccu\_good     & 0.012402         & 0.100276            & 2.371853     
+\end{tabular}%
+}
+\label{target ccu good fp growth apriori 5 total rules}
+\end{table}
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rllrrr}
+\textbf{} & \textbf{antecedents}                            & \textbf{consequents}      & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & cat=Steam Trading Cards, tag=Story Rich         & target=reviews\_50p\_plus & 0.021853         & 0.998000            & 1.955074      \\
+2         & cat=Steam Trading Cards, tag=Atmospheric        & target=reviews\_50p\_plus & 0.021975         & 0.996822            & 1.952766      \\
+3         & cat=Steam Trading Cards, tag=RPG                & target=reviews\_50p\_plus & 0.023053         & 0.992459            & 1.944219      \\
+4         & cat=Steam Trading Cards, tag=Adventure          & target=reviews\_50p\_plus & 0.046184         & 0.991725            & 1.942781      \\
+5         & cat=Steam Trading Cards, tag=Strategy           & target=reviews\_50p\_plus & 0.022982         & 0.991686            & 1.942705      \\
+6         & cat=Steam Trading Cards, tag=Action             & target=reviews\_50p\_plus & 0.045860         & 0.987179            & 1.933877      \\
+7         & cat=Steam Trading Cards, tag=Indie              & target=reviews\_50p\_plus & 0.061800         & 0.985613            & 1.930808      \\
+8         & Release\_era=2010-2019, cat=Steam Trading Cards & target=reviews\_50p\_plus & 0.069315         & 0.979819            & 1.919459      \\
+9         & Release\_era=2010-2019, tag=Female Protagonist  & target=reviews\_50p\_plus & 0.020162         & 0.962375            & 1.885285      \\
+10        & Discount=51-75, cat=Steam Trading Cards         & target=reviews\_50p\_plus & 0.021485         & 0.961584            & 1.883735     
+\end{tabular}%
+}
+\label{target reviews 50p fp growth 192 total rules}
+\end{table}
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rllrrr}
+\textbf{} & \textbf{antecedents}     & \textbf{consequents}      & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & cat=Steam Trading Cards  & target=reviews\_50p\_plus & 0.092508         & 0.930491            & 1.822824      \\
+2         & tag=Co-op                & target=reviews\_50p\_plus & 0.038249         & 0.830544            & 1.627029      \\
+3         & tag=Anime                & target=reviews\_50p\_plus & 0.059252         & 0.828943            & 1.623892      \\
+4         & tag=Difficult            & target=reviews\_50p\_plus & 0.045466         & 0.817738            & 1.601942      \\
+5         & Discount=76+             & target=reviews\_50p\_plus & 0.058971         & 0.813262            & 1.593175      \\
+6         & tag=Visual Novel         & target=reviews\_50p\_plus & 0.041270         & 0.809205            & 1.585226      \\
+7         & tag=Multiplayer          & target=reviews\_50p\_plus & 0.071785         & 0.807965            & 1.582798      \\
+8         & tag=Psychological Horror & target=reviews\_50p\_plus & 0.042996         & 0.804754            & 1.576507      \\
+9         & Release\_era=2010-2019   & target=reviews\_50p\_plus & 0.211248         & 0.803859            & 1.574755      \\
+10        & tag=Female Protagonist   & target=reviews\_50p\_plus & 0.053138         & 0.800501            & 1.568176     
+\end{tabular}%
+}
+\label{target reviews 50p apriori 37 total rules}
+\end{table}
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rllrrr}
+\textbf{} & \textbf{antecedents}                            & \textbf{consequents}      & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & cat=Steam Trading Cards, tag=Atmospheric        & target=reviews\_75p\_plus & 0.020872         & 0.946762            & 3.783138      \\
+2         & cat=Steam Trading Cards, tag=Story Rich         & target=reviews\_75p\_plus & 0.020626         & 0.942000            & 3.764110      \\
+3         & cat=Steam Trading Cards, tag=RPG                & target=reviews\_75p\_plus & 0.020819         & 0.896305            & 3.581517      \\
+4         & cat=Steam Trading Cards, tag=Adventure          & target=reviews\_75p\_plus & 0.040613         & 0.872108            & 3.484832      \\
+5         & cat=Steam Trading Cards, tag=Strategy           & target=reviews\_75p\_plus & 0.020153         & 0.869615            & 3.474867      \\
+6         & DLC=1-2, cat=Steam Trading Cards                & target=reviews\_75p\_plus & 0.026565         & 0.859938            & 3.436199      \\
+7         & Release\_era=2010-2019, tag=Multiplayer         & target=reviews\_75p\_plus & 0.025277         & 0.842628            & 3.367031      \\
+8         & cat=Steam Cloud, cat=Steam Trading Cards        & target=reviews\_75p\_plus & 0.047822         & 0.840776            & 3.359632      \\
+9         & cat=Steam Trading Cards, platform=Mac           & target=reviews\_75p\_plus & 0.030602         & 0.824445            & 3.294377      \\
+10        & Release\_era=2010-2019, cat=Steam Trading Cards & target=reviews\_75p\_plus & 0.056983         & 0.805497            & 3.218662     
+\end{tabular}%
+}
+\label{target reviews 75p fp growth 87 total rules}
+\end{table}
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rllrrr}
+\textbf{} & \textbf{antecedents}    & \textbf{consequents}      & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & cat=Steam Trading Cards & target=reviews\_75p\_plus & 0.079020         & 0.794820            & 3.175997      \\
+2         & tag=Co-op               & target=reviews\_75p\_plus & 0.027038         & 0.587105            & 2.345997      \\
+3         & tag=Multiplayer         & target=reviews\_75p\_plus & 0.051089         & 0.575020            & 2.297704      \\
+4         & tag=Anime               & target=reviews\_75p\_plus & 0.038555         & 0.539395            & 2.155351      \\
+5         & tag=Open World          & target=reviews\_75p\_plus & 0.028027         & 0.534045            & 2.133976      \\
+6         & DLC=1-2                 & target=reviews\_75p\_plus & 0.063193         & 0.510941            & 2.041655      \\
+7         & Discount=76+            & target=reviews\_75p\_plus & 0.036777         & 0.507187            & 2.026653      \\
+8         & tag=Female Protagonist  & target=reviews\_75p\_plus & 0.033414         & 0.503365            & 2.011379      \\
+9         & tag=Story Rich          & target=reviews\_75p\_plus & 0.057798         & 0.494529            & 1.976075      \\
+10        & Release\_era=2010-2019  & target=reviews\_75p\_plus & 0.122497         & 0.466138            & 1.862626     
+\end{tabular}%
+}
+\label{target reviews 75p apriori 34 total rules}
+\end{table}
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rrrrrr}
+\textbf{} & \textbf{antecedents}                     & \textbf{consequents}      & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & tag=Co-op                                & target=sales\_good        & 0.007769         & 0.168695            & 7.679673      \\
+2         & tag=Multiplayer                          & target=sales\_good        & 0.012297         & 0.138407            & 6.300827      \\
+3         & tag=Open World                           & target=sales\_good        & 0.007191         & 0.137016            & 6.237507      \\
+4         & cat=Steam Trading Cards                  & target=sales\_good        & 0.011544         & 0.116113            & 5.285925      \\
+5         & tag=Multiplayer                          & target=ccu\_good          & 0.017298         & 0.194696            & 4.605192      \\
+6         & cat=Steam Trading Cards                  & target=ccu\_good          & 0.016624         & 0.167210            & 3.955050      \\
+7         & cat=Steam Trading Cards, tag=Atmospheric & target=reviews\_75p\_plus & 0.020872         & 0.946762            & 3.783138      \\
+8         & cat=Steam Trading Cards, tag=Story Rich  & target=reviews\_75p\_plus & 0.020626         & 0.942000            & 3.764110      \\
+9         & cat=Steam Trading Cards, tag=RPG         & target=reviews\_75p\_plus & 0.020819         & 0.896305            & 3.581517      \\
+10        & cat=Steam Trading Cards, tag=Adventure   & target=reviews\_75p\_plus & 0.040613         & 0.872108            & 3.484832     
+\end{tabular}%
+}
+\label{top 10 global fp-growth}
+\end{table}
+
+\begin{table}[]
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{rllrrr}
+\textbf{} & \textbf{antecedents}    & \textbf{consequents}      & \textbf{support} & \textbf{confidence} & \textbf{lift} \\
+1         & tag=Co-op               & target=sales\_good        & 0.007769         & 0.168695            & 7.679673      \\
+2         & tag=Multiplayer         & target=sales\_good        & 0.012297         & 0.138407            & 6.300827      \\
+3         & tag=Open World          & target=sales\_good        & 0.007191         & 0.137016            & 6.237507      \\
+4         & cat=Steam Trading Cards & target=sales\_good        & 0.011544         & 0.116113            & 5.285925      \\
+5         & tag=Multiplayer         & target=ccu\_good          & 0.017298         & 0.194696            & 4.605192      \\
+6         & cat=Steam Trading Cards & target=ccu\_good          & 0.016624         & 0.167210            & 3.955050      \\
+7         & cat=Steam Trading Cards & target=reviews\_75p\_plus & 0.079020         & 0.794820            & 3.175997      \\
+8         & cat=Co-op               & target=ccu\_good          & 0.011412         & 0.118401            & 2.800556      \\
+9         & cat=Multi-player        & target=ccu\_good          & 0.017902         & 0.100839            & 2.385157      \\
+10        & DLC=1-2                 & target=ccu\_good          & 0.012402         & 0.100276            & 2.371853     
+\end{tabular}%
+}
+\label{top 10 global apriori}
+\end{table}
+
+\subsection{Análisis de los juegos de interés}
+En los juegos de interés se utilizó el algoritmo Apriori para encontrar las relaciones entre géneros para encontrar las combinaciones más frecuentes. Con este algoritmo se encontraron 2288 regals de asociación, ilustradas con su soporte y confianza en la figura \ref{fig:as_rules1}. Las 10 reglas con mayor lift se ilustran en la figura \ref{fig:as_rules_top10_1}.
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/grafica_7.png}}
+  \caption{Reglas de asociación de los juegos de interés.}
+  \label{fig:as_rules1}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/grafica_8.png}}
+  \caption{Reglas con mayor lift en el primer análsis.}
+  \label{fig:as_rules_top10_1}
+\end{figure}
+
+Sin embargo, muchas de las reglas descubiertas con este método corresponden a jerarquías naturales de clasificación, como es el caso de la regla \texttt{Psychological Horror -> Horror}, o conceptos sumamente amplios. Por esto se aplicaron dos estrategias de filtrado avanzado: la primera es la exclusión de etiquetas genéricas ("Stop-Tags"), donde se retiran ciertas etiquetas que no aportan diferenciación. La segunda es el análisis de reglas complejas, donde se buscan reglas con al menos 3 elementos para obtener información más valiosa.
+
+Al aplicar estas dos estrategias, se obtuvieron 2060 reglas, de las cuales las 10 con mayor lift se encuentran en la figura \ref{fig:as_rules_top10_2}.
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/grafica_9.png}}
+  \caption{Reglas con mayor lift en el análsis con las dos estrategias aplicadas.}
+  \label{fig:as_rules_top10_2}
+\end{figure}
+
+A continuación, se realizó el análisis de los juegos de interés orientado a la creación de reglas con el consecuente "Overwhelmingly Positive" en la variable \texttt{review\_score\_cat}. Las 10 combinaciones que tienen este consecuente se muestran en la figura \ref{fig:as_rules_top10_3}.
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/grafica_10.png}}
+  \caption{Reglas con mayor lift en el análsis con las dos estrategias aplicadas.}
+  \label{fig:as_rules_top10_3}
+\end{figure}
+
+Por último, se realizó la ejecución del algoritmo FP-Growth sobre los mismos datos, obteniendo resultados idénticos en las reglas pero con una mejora notable en el desempeño del algoritmo, obteniendo el mismo número de itemsets 4.7 veces más rápidamente.
+
 \section{Conclusión y Trabajos Futuros}
 Pendiente
 
