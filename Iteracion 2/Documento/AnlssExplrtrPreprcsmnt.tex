@@ -69,13 +69,13 @@ Analizar qué variables del conjunto de datos influyen más en el éxito de un v
 \section{Descripción del conjunto de datos}
 Se utilizó el ``Steam Games Dataset'' \cite{steamDataset}, obtenido a partir de la API oficial de Steam. Este \textit{dataset} cuenta con 122\,611 registros, correspondientes cada uno a un videojuego único, y está compuesto por 39 variables originales.
 
-Las variables abarcan diferentes tipos (ver Figura \ref{fig:dist_vars}): nominales absolutas como el identificador (\textit{AppID}) y nombre (\textit{Name}); de razón para características continuas como el precio (\textit{Price}) y la máxima cantidad de jugadores simultáneos (\textit{Peak CCU}); ordinales como la estimación de compradores (\textit{Estimated owners}); y variables con múltiples valores nominales, como los géneros (\textit{Genres}) y categorías (\textit{Categories}).
-
 \begin{figure}[htbp]
   \centerline{\includegraphics[width=\linewidth]{figures/grafica_1.png}}
   \caption{Distribución de frecuencias para las variables numéricas de Steam. Se evidencia una gran asimetría hacia el lado izquierdo.}
   \label{fig:dist_vars}
 \end{figure}
+
+Las variables abarcan diferentes tipos (ver Figura \ref{fig:dist_vars}): nominales absolutas como el identificador (\textit{AppID}) y nombre (\textit{Name}); de razón para características continuas como el precio (\textit{Price}) y la máxima cantidad de jugadores simultáneos (\textit{Peak CCU}); ordinales como la estimación de compradores (\textit{Estimated owners}); y variables con múltiples valores nominales, como los géneros (\textit{Genres}) y categorías (\textit{Categories}).
 
 \section{Análisis Exploratorio y Resultados}
 
@@ -116,7 +116,7 @@ El preprocesamiento del precio exhibía un desafío dada la enorme recurrencia d
 La estrategia para atenuar valores atípicos se dictaminó con el algoritmo clásico del rango intercuartílico (IQR). En el campo preciso de los análisis tarifarios, se evidenció que aislar en dos sub-estratos independientes a los títulos ``Gratuitos'' en relación a aquellos de ``Pago'', provocaba un impacto determinante para comprender o fijar el límite estadístico a partir de cuándo un valor era realmente un costo sumamente atípico. Referente a medidas de popularidad de éxito irruptivo tales como la congregación máxima histórica (\textit{Peak CCU}), se optó intencionalmente por conservar intactos todos sus datos hiper-extendidos. Esto obedece a que limitar arbitrariamente dichos volúmenes resultaría en amputar a los protagonistas absolutos y al concepto fundamental del ``éxito'', mermando completamente las proyecciones algorítmicas hacia los verdaderos gigantes del mercado de videojuegos.
 
 \subsection{Categorización de atributos}
-Para facilitar el análisis de las reseñas, se crearon nuevas columnas con información derivada. Para empezar se crearon las columnas \texttt{total\_reviews} y \texttt{review\_rate}. La primera es el total de reseñas que tiene un juego, mientras que la segunda es la tase de reseñas positivas, calculada con la división entre las reseñas positivas (\textit{Positive}) y las reseñas totales. Con la tasa se realizó una categorización para manejar las reseñas, esta refleja la que se usa en la plataforma. Para empezar se analiza el número de reseñas, si son cero se asigna la categoría \textit{No reviews}, y si son menos de diez se tiene \textit{Too few reviews}. A partir de aquí, se toma la tasa para asignar las categorías además del número de reseñas.
+Para facilitar el análisis de las reseñas, se crearon nuevas columnas con información derivada. Para empezar se crearon las columnas \texttt{total\_reviews} y \texttt{review\_rate}. La primera es el total de reseñas que tiene un juego, mientras que la segunda es la tase de reseñas positivas, calculada con la división entre las reseñas positivas (\textit{Positive}) y las reseñas totales. Con la tasa se realizó una categorización para manejar las reseñas, esta refleja la que se usa en la plataforma. Para empezar se analiza el número de reseñas, si son cero se asigna la categoría \textit{No reviews}, y si son menos de diez se tiene \textit{Too few reviews}. A partir de aquí, se toma la tasa para asignar las categorías además del número de reseñas, como se observa en la tabla \ref{table_1}
 
 \begin{table}[]
 \begin{tabular}{lll}
@@ -129,9 +129,11 @@ Mostly Negative         & 10              & 0,2         \\
 Overwhelmingly Negative & 500             & 0,2         \\
 Very Negative           & 50              & 0,2        
 \end{tabular}
+\caption{Reseñas y tasas mínimas para categorizar las reseñas.}
+\label{table_1}
 \end{table}
 
-También se creó una categorización para las ventas, con el atributo "No data" para aquellos juegos sin ventas. A partir de aquí se tienen las siguientes categorías:
+También se creó una categorización para las ventas, con el atributo "No data" para aquellos juegos sin ventas. En la tabla \ref{table_2} se tienen las categorías para las ventas.
 
 \begin{table}[]
 \begin{tabular}{ll}
@@ -144,6 +146,8 @@ Very Popular      & 2000000          \\
 Top Game          & 10000000         \\
 Blockbuster       & 50000000        
 \end{tabular}
+\caption{Categorías para las ventas.}
+\label{table_2}
 \end{table}
 
 Adicionalmente, se tiene la categoría "Mega Hit" para los juegos que tengan más de 50000000 de ventas.
@@ -170,7 +174,7 @@ Respecto a los consecuentes, se seleccionaron como medidas de éxito la califica
 
 Durante la aplicación de los algoritmos se pusieron restricciones a los soportes mínimo y máximo para descartar items raros y descartar tiems demasiado comunes (poco informativos).
 
-Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para cada consecuente, seguido de las 10 reglas globales más frecuentes. 
+Las tablas desde la \ref{table_3} hasta la \ref{table_12} muestran las 10 mejores reglas generadas por los dos algoritmos para cada consecuente, seguido de las 10 reglas globales más frecuentes. 
 
 \begin{table}[]
 \resizebox{\columnwidth}{!}{%
@@ -188,7 +192,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 10        & cat=Steam Cloud, cat=Steam Trading Cards  & target=review\_good  & 0.043539         & 0.765476            & 2.161698     
 \end{tabular}%
 }
-\label{target review good fp growth 126 total rules}
+\caption{Reglas para buenas reseñas con FP-growth con 126 reglas totales}
+\label{table_3}
 \end{table}
 
 \begin{table}[]
@@ -207,7 +212,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 10        & tag=Cute                & target=review\_good  & 0.066635         & 0.600047            & 1.694529     
 \end{tabular}%
 }
-\label{target review good apriori 37 total rules}
+\caption{Reglas para buenas reseñas con Apriori con 37 reglas totales}
+\label{table_4}
 \end{table}
 
 \begin{table}[]
@@ -220,7 +226,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 4         & cat=Steam Trading Cards & target=sales\_good   & 0.011544         & 0.116113            & 5.285925     
 \end{tabular}%
 }
-\label{target sales good fp growth apriori 4 total rules}
+\caption{Reglas para buenas ventas con FP-Growth con 4 reglas totales}
+\label{table_5}
 \end{table}
 
 \begin{table}[]
@@ -234,7 +241,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 5         & DLC=1-2                 & target=ccu\_good     & 0.012402         & 0.100276            & 2.371853     
 \end{tabular}%
 }
-\label{target ccu good fp growth apriori 5 total rules}
+\caption{Reglas para buenas ventas con Apriori con 4 reglas totales}
+\label{table_6}
 \end{table}
 
 \begin{table}[]
@@ -253,7 +261,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 10        & Discount=51-75, cat=Steam Trading Cards         & target=reviews\_50p\_plus & 0.021485         & 0.961584            & 1.883735     
 \end{tabular}%
 }
-\label{target reviews 50p fp growth 192 total rules}
+\caption{Reglas para reseñas en el percentil 50 con FP-Growth con 192 reglas totales}
+\label{table_7}
 \end{table}
 
 \begin{table}[]
@@ -272,7 +281,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 10        & tag=Female Protagonist   & target=reviews\_50p\_plus & 0.053138         & 0.800501            & 1.568176     
 \end{tabular}%
 }
-\label{target reviews 50p apriori 37 total rules}
+\caption{Reglas para reseñas en el percentil 50 con Apriori con 37 reglas totales}
+\label{table_8}
 \end{table}
 
 \begin{table}[]
@@ -291,7 +301,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 10        & Release\_era=2010-2019, cat=Steam Trading Cards & target=reviews\_75p\_plus & 0.056983         & 0.805497            & 3.218662     
 \end{tabular}%
 }
-\label{target reviews 75p fp growth 87 total rules}
+\caption{Reglas para reseñas en el percentil 75 con FP-Growth con 87 reglas totales}
+\label{table_9}
 \end{table}
 
 \begin{table}[]
@@ -310,7 +321,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 10        & Release\_era=2010-2019  & target=reviews\_75p\_plus & 0.122497         & 0.466138            & 1.862626     
 \end{tabular}%
 }
-\label{target reviews 75p apriori 34 total rules}
+\caption{Reglas para reseñas en el percentil 75 con Apriori con 34 reglas totales}
+\label{table_10}
 \end{table}
 
 \begin{table}[]
@@ -329,7 +341,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 10        & cat=Steam Trading Cards, tag=Adventure   & target=reviews\_75p\_plus & 0.040613         & 0.872108            & 3.484832     
 \end{tabular}%
 }
-\label{top 10 global fp-growth}
+\caption{Top 10 reglas con FP-Growth}
+\label{table_11}
 \end{table}
 
 \begin{table}[]
@@ -348,7 +361,8 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 10        & DLC=1-2                 & target=ccu\_good          & 0.012402         & 0.100276            & 2.371853     
 \end{tabular}%
 }
-\label{top 10 global apriori}
+\caption{Top 10 reglas con Apriori}
+\label{table_12}
 \end{table}
 
 \subsection{Análisis de los juegos de interés}
@@ -477,12 +491,7 @@ Por un lado el algoritmo jerárquico Agglomerative Clustering obtuvo el coeficie
 Por otra parte, DBSCAN presenta la falla de considerar los vecinos para generar un cluster, lo que deja a muchos juegos importantes por su éxito anormal como anomalías o ruido, lo que disminuye el valor de la información obtenida.
 
 \section{Conclusión y Trabajos Futuros}
-Pendiente
-
-
-
-
-
+Con este avance del proyecto se pudo empezar a obtener información acerca del dataset mas allá del análisis exploratorio. Gracias a la creación de reglas de asociación es posible identificar patrones en los datos que pueden explicar los resultados de cierto tipo de juegos, mientras que el análisis de la agrupación explica las características que tienen los juegos exitosos. Esta información es importante para los desarrolladores que busquen tener éxito en el mercado.
 
 
 \nocite{*}
