@@ -352,7 +352,6 @@ Las tablas muestran las 10 mejores reglas generadas por los dos algoritmos para 
 \end{table}
 
 \subsection{Análisis de los juegos de interés}
-En los juegos de interés se utilizó el algoritmo Apriori para encontrar las relaciones entre géneros para encontrar las combinaciones más frecuentes. Con este algoritmo se encontraron 2288 regals de asociación, ilustradas con su soporte y confianza en la figura \ref{fig:as_rules1}. Las 10 reglas con mayor lift se ilustran en la figura \ref{fig:as_rules_top10_1}.
 
 \begin{figure}[htbp]
   \centerline{\includegraphics[width=\linewidth]{figures/grafica_7.png}}
@@ -366,9 +365,9 @@ En los juegos de interés se utilizó el algoritmo Apriori para encontrar las re
   \label{fig:as_rules_top10_1}
 \end{figure}
 
-Sin embargo, muchas de las reglas descubiertas con este método corresponden a jerarquías naturales de clasificación, como es el caso de la regla \texttt{Psychological Horror -> Horror}, o conceptos sumamente amplios. Por esto se aplicaron dos estrategias de filtrado avanzado: la primera es la exclusión de etiquetas genéricas ("Stop-Tags"), donde se retiran ciertas etiquetas que no aportan diferenciación. La segunda es el análisis de reglas complejas, donde se buscan reglas con al menos 3 elementos para obtener información más valiosa.
+En los juegos de interés se utilizó el algoritmo Apriori para encontrar las relaciones entre géneros para encontrar las combinaciones más frecuentes. Con este algoritmo se encontraron 2288 regals de asociación, ilustradas con su soporte y confianza en la figura \ref{fig:as_rules1}. Las 10 reglas con mayor lift se ilustran en la figura \ref{fig:as_rules_top10_1}.
 
-Al aplicar estas dos estrategias, se obtuvieron 2060 reglas, de las cuales las 10 con mayor lift se encuentran en la figura \ref{fig:as_rules_top10_2}.
+Sin embargo, muchas de las reglas descubiertas con este método corresponden a jerarquías naturales de clasificación, como es el caso de la regla \texttt{Psychological Horror -> Horror}, o conceptos sumamente amplios. Por esto se aplicaron dos estrategias de filtrado avanzado: la primera es la exclusión de etiquetas genéricas ("Stop-Tags"), donde se retiran ciertas etiquetas que no aportan diferenciación. La segunda es el análisis de reglas complejas, donde se buscan reglas con al menos 3 elementos para obtener información más valiosa.
 
 \begin{figure}[htbp]
   \centerline{\includegraphics[width=\linewidth]{figures/grafica_9.png}}
@@ -376,7 +375,7 @@ Al aplicar estas dos estrategias, se obtuvieron 2060 reglas, de las cuales las 1
   \label{fig:as_rules_top10_2}
 \end{figure}
 
-A continuación, se realizó el análisis de los juegos de interés orientado a la creación de reglas con el consecuente "Overwhelmingly Positive" en la variable \texttt{review\_score\_cat}. Las 10 combinaciones que tienen este consecuente se muestran en la figura \ref{fig:as_rules_top10_3}.
+Al aplicar estas dos estrategias, se obtuvieron 2060 reglas, de las cuales las 10 con mayor lift se encuentran en la figura \ref{fig:as_rules_top10_2}.
 
 \begin{figure}[htbp]
   \centerline{\includegraphics[width=\linewidth]{figures/grafica_10.png}}
@@ -384,7 +383,98 @@ A continuación, se realizó el análisis de los juegos de interés orientado a 
   \label{fig:as_rules_top10_3}
 \end{figure}
 
+A continuación, se realizó el análisis de los juegos de interés orientado a la creación de reglas con el consecuente "Overwhelmingly Positive" en la variable \texttt{review\_score\_cat}. Las 10 combinaciones que tienen este consecuente se muestran en la figura \ref{fig:as_rules_top10_3}.
+
 Por último, se realizó la ejecución del algoritmo FP-Growth sobre los mismos datos, obteniendo resultados idénticos en las reglas pero con una mejora notable en el desempeño del algoritmo, obteniendo el mismo número de itemsets 4.7 veces más rápidamente.
+
+\section{Análisis de la agrupación}
+Para realizar un análisis de los juegos según su rendimiento se realizó el agrupamiento de los juegos de interés. Este tipo de análisis también se intentó con el dataset completo. Sin embargo, debido a la cantidad de datos, los análisis intentados no se pudieron completar.
+
+\subsection{Análsis del dataset completo}
+Para la agrupación se seleccionaron como variables el porcentaje de reseñas positivas (\texttt{Positive}), el número de compradores estimado (\texttt{Estimated owners}) y el pico de jugadores concurrentes (\texttt{Peak CCU}). Se eliminaron las filas con valores nulos en estas variables y se normalizaron.
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/grafica_11.png}}
+  \caption{Valores generados con cada n usando el algoritmo K-Means.}
+  \label{fig:ag_dc_elbow}
+\end{figure}
+
+
+Se utilizó primero el algoritmo K-Means con distintas cantidades de clusters, esto con el objetivo de encontrar el valor que maximizara el Silhouette, el cual fue de 3 clusters. Los resultados se muestran en la figura \ref{fig:ag_dc_elbow}.
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/grafica_12.png}}
+  \caption{Valores generados con cada n en el algoritmo GMM.}
+  \label{fig:ag_dc_elbow_2}
+\end{figure}
+
+Para la segunda prueba se utilizó el algoritmo GMM (Gaussian Mixture Model). En este se utilizó el criterio Bayesiano de información para obtener el número óptimo de n, el cuál fue de 8. Esto se evidencia en la figura \ref{fig:ag_dc_elbow_2}.
+
+A pesar de que los dos algoritmos se ejecutaron exitosamente, no fue posible obtener más información de los clusters debido a que no se puedo ejecutar el código para la comparación y la graficación en tres dimensiones.
+
+\subsection{Análisis de los juegos de interés}
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/grafica_13.png}}
+  \caption{Gráfica de codo generada para los juegos de interés con el algoritmo K-Means.}
+  \label{fig:ag_ji_elbow}
+\end{figure}
+
+En el caso de los juegos de interés se empleó primero el algoritmo K-means sobre cuatro variables que definen el perfil comercial del juego: El precio (\texttt{Price}), pico de usuarios concurrentes \texttt{Peak CCU}, porcentaje de reseñas positivas (\texttt{Positive}) y promedio de timepo jugado \texttt{Average playtime forever}. De manera similar al análisis de los datos en genral primero se normalizaron los datos y más adelante se usó el método del codo para encontrar el número óptimo de clusters. Este método se encuentra graficado en la figura \ref{fig:ag_ji_elbow}.
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/tabla_1.png}}
+  \caption{Tabla generada con los promedios de las variables en cada cluster.}
+  \label{fig:ag_ji_table}
+\end{figure}
+
+Se tomó el valor n como cuatro, y los valores promedio de cada cluster se encuentran en la figura \ref{fig:ag_ji_table}.
+
+Con estas métricas se puede hacer un análisis de cada cluster para comprender los perfiles comerciales de los juegos exitosos.
+
+\begin{itemize}
+  \item Éxito general: El cluster más grande tiene precios accesibles y tiempos de juego cercanos al promedio.
+  \item Juegos premium: En este grupo los juegos tienen un valor más elevado, con grandes cantidades de reseñas positivas y altos picos de jugadores.
+  \item Juegos Idle: Unos pocos juegos con bajos precios, reseñas y jugadores, pero con una cantidad muy alta de tiempo de juego. Estos juegos son aquellos que se pueden dejar corriendo de fondo mientras los usuarios hacen otras tareas.
+  \item Duopolio Free-to-play: El último cluster lo componen solo dos juegos: Counter-Strike 2 y Dota 2. Estos dos juegos son gratuitos, con una gran cantidad de usuarios y tiempo de juego. Se podría considerar que estos juegos tienen un ecosistema económico independiente.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/grafica_14.png}}
+  \caption{Gráfica de codo del algoritmo K-Means en los juegos con reseñas muy positivas con los datos con transformación logarítmica.}
+  \label{fig:ag_ji_log_elbow}
+\end{figure}
+
+Para robustecer el análisis del algoritmo K-Means se aplica una transformación logarítmica a los datos para reducir el impacto de juegos con métricas extremas y se busca comprender la razón por la que ciertos juegos tienen la calificación \texttt{Overwhelmingly Positive}. El análisis genera la gráfica de codo de la figura \ref{fig:ag_ji_log_elbow}.
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/tabla_2.png}}
+  \caption{Clusters generados por el algoritmo K-Means usando datos con transformación logarítmica.}
+  \label{fig:ag_ji_log_table}
+\end{figure}
+
+Con esta ejecución del algoritmo se encontraron los clusters de la figura \ref{fig:ag_ji_log_table}.
+
+Con los dos análisis se encontraron dos grandes divisiones:
+
+\begin{itemize}
+  \item Entre los juegos de precio medio/alto se encontraron dos grupos con buenas retenciones de juego, pero diferenciados por la popularidad, representada en el pico de usuarios concurrentes. Por un lado se tienen juegos muy conocidos con un CCU muy elevado, y por otro juegos aclamados pero menos populares, con buena retención pero un bajo pico de usuarios concurrentes.
+  \item  Entre los juegos gratuitos o de bajo costo se tiene una división basada en el tiempo de juego promedio, con una división entre los juegos con un tiempo de juego razonable y aquellos con muy poco tiempo, catalogados como herramientas o registros erróneos.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centerline{\includegraphics[width=\linewidth]{figures/grafica_15.png}}
+  \caption{Rendimiento de los algortimos evaluados con base en el coeficiente de Silueta.}
+  \label{fig:ag_ji_sil}
+\end{figure}
+
+Para realizar una comparación, se utilizaron otros dos algoritmos para realizar una comparativa entre las tres grandes familias de clustering no supervisado. Como K-Means es un algoritmo particional, su utilizó Agglomerative Clustering para tener un algoritmo jerárquico y DBSCAN para uno basado en densidad. El rendimiento de cada algoritmo es evaluado con el coeficiente de Silueta, una métrica que penaliza agrupaciones difusas y premia fronteras naturales y bien cohesionadas. Los resultados de la evaluación del coeficiente de Silueta se encuentran en la figura \ref{fig:ag_ji_sil}.
+
+Con estas métricas se confirma que en este caso el algoritmo K-Means provee la mejor interpretación del dataset, mientras que los otros dos algoritmos tienen más problemas.
+
+Por un lado el algoritmo jerárquico Agglomerative Clustering obtuvo el coeficiente de Silueta más baja, esto se puede explicar por la presencia de una gran cantidad de registros similares, como una nube de datos. Este algoritmo realiza cortes arbitrarios, reduciendo la precisión de los clusters generados.
+
+Por otra parte, DBSCAN presenta la falla de considerar los vecinos para generar un cluster, lo que deja a muchos juegos importantes por su éxito anormal como anomalías o ruido, lo que disminuye el valor de la información obtenida.
 
 \section{Conclusión y Trabajos Futuros}
 Pendiente
